@@ -1,0 +1,7 @@
+{
+    "n_estimators": {"type": "randint", "lower": 200, "upper": 600},
+    "max_depth": {"type": "randint", "lower": 3, "upper": 8},
+    "learning_rate": {"type": "loguniform", "low": 0.001, "high": 0.3},
+    "subsample": [0.6, 0.7, 0.8, 0.9],
+    "colsample_bytree": [0.6, 0.7, 0.8, 0.9]
+}

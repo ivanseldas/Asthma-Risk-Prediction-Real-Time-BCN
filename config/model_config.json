@@ -1,0 +1,12 @@
+{
+    "objective": "reg:squarederror",
+    "n_estimators": 300,
+    "max_depth": 6,
+    "learning_rate": 0.05,
+    "subsample": 0.8,
+    "colsample_bytree": 0.7,
+    "reg_alpha": 0.1,
+    "reg_lambda": 0.1,
+    "early_stopping_rounds": 20,
+    "eval_metric": "mae"
+}
