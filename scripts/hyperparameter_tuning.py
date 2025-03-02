@@ -92,10 +92,10 @@ optimized_mae = mean_absolute_error(y_test, optimized_model.predict(X_test))
 model_opt_dir = "../model/production"
 if optimized_mae < baseline_mae:
     model_opt_path = f"{model_opt_dir}/xgb_hyp{datetime.now().strftime('%Y%m%d-%H%M')}_mae_{optimized_mae:.1f}.pkl"
+    joblib.dump(optimized_model, model_opt_path)
 else:
     model_opt_path = f"{model_opt_dir}/xgb_base{datetime.now().strftime('%Y%m%d-%H%M')}_mae_{baseline_mae:.1f}.pkl"
-    
-joblib.dump(optimized_mae, model_opt_path)
+    joblib.dump(model, model_opt_path)
 
 print(f"""
 Comparative Results:
