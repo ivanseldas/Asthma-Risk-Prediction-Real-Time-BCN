@@ -2,9 +2,23 @@
 
 ![1583156989423](https://github.com/user-attachments/assets/84b0b4a9-d628-461c-b24b-1f3bea329b40)
 
-## 🎯 Final Objective  
-**Develop an end-to-end predictive system that:**  
-1. Predicts asthma exacerbation risk 48h in advance (AUC >0.85)  
-2. Integrates real-world environmental data from Barcelona  
-3. Demonstrates clinical impact aligned with Symbicort® outcomes  
-4. Showcases AWS MLOps expertise (IoT Core → SageMaker → QuickSight)  
+Predict asthma exacerbation risk using **inhaler telemetry** + **Barcelona air quality** (Open Data BCN).  
+![Link:](https://public.tableau.com/app/profile/ivan.seldas/viz/Asthma-Risk-Prediction-Real-Time-BCN-dashboard/Dashboard)
+
+## 🚀 Features  
+- XGBoost model (MAE: 0.53 puffs)  
+- Time-series validation  
+- GEMA guideline alignment  
+- Tableau dashboard (risk hotspots)  
+- DVC pipelines
+
+## Dashboard
+
+
+## 🛠️ Stack  
+`Python` `XGBoost` `Pandas` `Scikit-learn` `Joblib` `Tableau`  
+
+## ⚙️ Installation  
+```bash  
+git clone https://github.com/yourusername/asthma-risk-prediction  
+pip install -r requirements.txt  
