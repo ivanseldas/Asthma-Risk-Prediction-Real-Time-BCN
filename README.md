@@ -3,7 +3,7 @@
 ![1583156989423](https://github.com/user-attachments/assets/84b0b4a9-d628-461c-b24b-1f3bea329b40)
 
 Predict asthma exacerbation risk using **inhaler telemetry** + **Barcelona air quality** (Open Data BCN).  
-[Tableau Dashboar](https://public.tableau.com/app/profile/ivan.seldas/viz/Asthma-Risk-Prediction-Real-Time-BCN-dashboard/Dashboard)
+[Tableau Dashboard](https://public.tableau.com/app/profile/ivan.seldas/viz/Asthma-Risk-Prediction-Real-Time-BCN-dashboard/Dashboard)
 
 ## 🚀 Features  
 - XGBoost model (MAE: 0.53 puffs)  
