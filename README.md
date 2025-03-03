@@ -10,7 +10,6 @@ Predict asthma exacerbation risk using **inhaler telemetry** + **Barcelona air q
 - Time-series validation  
 - GEMA guideline alignment  
 - Tableau dashboard (risk hotspots)  
-- DVC pipelines
 
 ## Dashboard
 
