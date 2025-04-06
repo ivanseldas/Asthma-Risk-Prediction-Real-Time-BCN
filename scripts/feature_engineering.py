@@ -8,12 +8,16 @@ from pathlib import Path
 # df_inhaler = pd.read_parquet("../data/processed/inhaler_air_merged/", engine="pyarrow")
 # df_patients = pd.read_parquet("../data/raw/iot_inhaler/patients.parquet", engine="pyarrow")
 
+# Global pollution parameters
+PM25_LIMIT = 15
+NO2_LIMIT = 25
+O3_LIMIT = 100
+
 def load_data(inhaler_path, patients_path):
     # Load parquet files
     df_inhaler = pd.read_parquet(f"{inhaler_path}", engine="pyarrow")
     df_patients = pd.read_parquet(f"{patients_path}", engine="pyarrow")
-    return df_inhaler, df_patients
-    
+    return df_inhaler, df_patients  
 
 # Merge and add features to dataset
 def create_clinical_features(df_inhaler, df_patients):
@@ -23,16 +27,28 @@ def create_clinical_features(df_inhaler, df_patients):
     # 1. Clinical Temporal Variables
     df['hour'] = df['timestamp'].dt.hour
     df['is_night'] = df['hour'].between(0,5).astype(int)
-    df['is_peak_pollution'] = df['hour'].between(7,10).astype(int)
+    # Corrected peak pollution hours flag
+    df['is_peak_pollution'] = (df['hour'].between(7, 10) | df['hour'].between(19, 22)).astype(int)
+    df['24h_puffs'] = df.groupby('patient_id')['puffs'].transform(lambda x: x.rolling(24, min_periods=12).sum())
     
     # 2. Environmental Exposures
-    df['pm25_24h_avg'] = df.groupby('district')['PM2.5 (µg/m³)'].transform(
-        lambda x: x.rolling(24).mean())
-    df['no2_exceedance'] = (df['NO2 (µg/m³)'] > 40).astype(int)
+    df['24h_PM25_avg'] = df.groupby('patient_id')['PM2.5 (µg/m³)'].transform(lambda x: x.rolling(24, min_periods=12).mean())
+    df['24h_NO2_avg'] = df.groupby('patient_id')['NO2 (µg/m³)'].transform(lambda x: x.rolling(24, min_periods=12).mean())
+    df['24h_O3_avg'] = df.groupby('patient_id')['O3 (µg/m³)'].transform(lambda x: x.rolling(24, min_periods=12).mean())
     
-    # 3. Adherence Patterns
-    df['adherence_trend'] = df.groupby('patient_id')['symbicort_adherence'].transform(
-        lambda x: x.rolling(72, min_periods=24).mean())
+    df['PM25_exceedance'] = (df['PM2.5 (µg/m³)'] > PM25_LIMIT).astype(int)
+    df['NO2_exceedance'] = (df['NO2 (µg/m³)'] > NO2_LIMIT).astype(int)
+    df['O3_exceedance'] = (df['O3 (µg/m³)'] > O3_LIMIT).astype(int)
+
+    # 3. Hospitalization events
+    df['hospitalization'] = np.where((df['24h_puffs'] > 12) & 
+                                            (
+                                                (df['24h_PM25_avg'] > PM25_LIMIT) |
+                                                (df['24h_NO2_avg'] > NO2_LIMIT) | 
+                                                (df['24h_O3_avg'] > O3_LIMIT)
+                                            ) | 
+                                            (df['puffs'] > 6), 
+                                            1, 0)
     
     # 4. GEMA-5.0 Risk Score
     severity_weights = {
@@ -41,8 +57,7 @@ def create_clinical_features(df_inhaler, df_patients):
         'Moderate Persistent': 2.0,
         'Severe Persistent': 3.0
     }
-    df['gema_risk_score'] = df['gema_severity'].map(severity_weights) * \
-                           (1.2 - df['symbicort_adherence'])
+    df['gema_risk_score'] = df['gema_severity'].map(severity_weights) * (1.2 - df['symbicort_adherence'])
     
     # 5. Geographic Factor
     district_risk = df.groupby('district')['puffs'].mean().to_dict()
